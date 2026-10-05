@@ -1,0 +1,22 @@
+import {test,expect} from '@playwright/test';
+import {randomUUID} from 'node:crypto';
+import sharp from 'sharp';
+import {apiUser,login} from './helpers';
+let cleanup:(()=>Promise<void>)|undefined;
+test.afterEach(async()=>{await cleanup?.();cleanup=undefined;});
+test('account switching clears private meals; notes remain plain text and weekly meal counts match',async({page})=>{
+  const {client,user}=await apiUser();const id=randomUUID(),photo=`${user.id}/${randomUUID()}.jpg`,day='2094-07-04';
+  const marker=`isolation-${id} <img src=x onerror=alert(1)>`;
+  cleanup=async()=>{const row=await client.from('meals').delete().eq('id',id);expect(row.error).toBeNull();const image=await client.storage.from('meal-photos').remove([photo]);expect(image.error).toBeNull();await client.auth.signOut({scope:'local'});};
+  const upload=await client.storage.from('meal-photos').upload(photo,await sharp({create:{width:100,height:100,channels:3,background:'#f6b2d5'}}).jpeg().toBuffer(),{contentType:'image/jpeg'});expect(upload.error).toBeNull();
+  const insert=await client.from('meals').insert({id,user_id:user.id,meal_type:'snack',notes:marker,eaten_at:`${day}T12:00:00+05:30`,meal_date:day,photo_path:photo});expect(insert.error).toBeNull();
+  let unexpectedDialog=false;page.on('dialog',async d=>{unexpectedDialog=true;await d.dismiss();});
+  await login(page);await page.getByLabel('Journal date').fill(day);await expect(page.getByText(marker,{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Your week',exact:true}).click();await page.getByText('View exact weekly data',{exact:true}).click();
+  const count=await client.from('meals').select('id',{count:'exact',head:true}).eq('meal_date',day).eq('meal_type','snack');
+  await expect(page.getByRole('row').filter({hasText:day}).getByRole('cell').nth(3)).toHaveText(String(count.count));
+  await page.getByRole('button',{name:'Sign out',exact:true}).click();await login(page,'B');await page.getByLabel('Journal date').fill(day);
+  await expect(page.getByRole('region',{name:'Sleep log'})).toBeVisible();await expect(page.getByText(marker,{exact:true})).toHaveCount(0);
+  await page.reload();await page.getByLabel('Journal date').fill(day);await expect(page.getByRole('region',{name:'Sleep log'})).toBeVisible();await expect(page.getByText(marker,{exact:true})).toHaveCount(0);expect(unexpectedDialog).toBe(false);
+  await page.getByRole('button',{name:'Sign out',exact:true}).click();
+});

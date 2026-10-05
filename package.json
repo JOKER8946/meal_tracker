@@ -1,0 +1,45 @@
+{
+  "name": "meal-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:schema": "node --test tests/schema.test.mjs",
+    "test:rls": "node --env-file=.env.local scripts/verify-rls.mjs",
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:unit": "node --test tests/dates-and-charts.test.mjs",
+    "audit:secrets": "node --env-file-if-exists=.env.local scripts/audit-secrets.mjs",
+    "prebuild": "node --env-file-if-exists=.env.local scripts/check-public-config.mjs",
+    "generate:icons": "node scripts/generate-icons.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.14",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "sharp": "^0.35.5",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@supabase/supabase-js": "^2.117.2",
+    "@tailwindcss/postcss": "^4.3.3",
+    "browser-image-compression": "^2.0.2",
+    "framer-motion": "^14.0.0",
+    "lucide-react": "^1.52.0",
+    "next": "^16.3.8",
+    "react": "^19.3.0",
+    "react-day-picker": "^10.0.2",
+    "react-dom": "^19.3.0",
+    "recharts": "^3.10.1",
+    "tailwindcss": "^4.3.3"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}
