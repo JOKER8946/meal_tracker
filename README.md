@@ -1,15 +1,18 @@
 # Daily
 
+**Live app:** [daily-meal-tracker-livid.vercel.app](https://daily-meal-tracker-livid.vercel.app)
+· **Source:** [JOKER8946/meal_tracker](https://github.com/JOKER8946/meal_tracker)
+
 Mobile-first diet and sleep tracker being built in the requested feature order:
 Supabase schema/RLS → auth → compressed meal uploads → sleep → calendar/history
 → weekly charts → PWA → maximalist styling → Vercel deployment.
 
-**Current state:** Features 1–8 are implemented. The schema passed 5 local
+**Current state:** Features 1–9 are implemented and deployed on Vercel. The schema passed 5 local
 PostgreSQL tests and 94 live API checks with two ordinary accounts. Individual
 browser checks passed for auth, compressed meal uploads, sleep, calendar/history,
 weekly data, the production PWA, and responsive layouts. All **8 combined production
-browser tests** also passed against real Supabase. Vercel deployment is awaiting
-account connection. Real signup email delivery/confirmation and
+browser tests** also passed against real Supabase, both locally and on the live
+Vercel URL. GitHub is connected for automatic deployments. Real signup email delivery/confirmation and
 installation on your physical phone still need acceptance checks. This is not a
 claim that the full DONE checklist has passed.
 
@@ -46,7 +49,7 @@ All listed files contain the complete implementation, not pseudocode or snippets
 | 6. Charts | [Recharts views](src/components/weekly-charts.tsx), [aggregation](src/lib/weekly.ts) |
 | 7. PWA | [manifest](src/app/manifest.ts), [worker](public/sw.js), [install controls](src/components/pwa.tsx), [offline page](public/offline.html), [icon generator](scripts/generate-icons.mjs) |
 | 8. Design | [Tailwind/global styles](src/app/globals.css), [layout and fonts](src/app/layout.tsx), [animated cards](src/components/meal-card.tsx) |
-| 9. Deployment | [Next config](next.config.ts), [public-key build check](scripts/check-public-config.mjs), [secret scan](scripts/audit-secrets.mjs), [.vercelignore](.vercelignore) |
+| 9. Deployment | [Vercel config](vercel.json), [Next config](next.config.ts), [public-key build check](scripts/check-public-config.mjs), [secret scan](scripts/audit-secrets.mjs), [.vercelignore](.vercelignore) |
 
 Shared files: [types](src/lib/types.ts), [accessible native dialog](src/components/modal.tsx),
 [App Router page](src/app/page.tsx), [package scripts](package.json),
@@ -149,7 +152,7 @@ credentials local; they do not belong in Vercel. Never deploy `.env.local`.
 
 1. Open your project's **Authentication → URL Configuration**.
 2. Set **Site URL** to the exact production URL, for example
-   `https://daily-meal-tracker.vercel.app` (use the URL Vercel actually assigns).
+   `https://daily-meal-tracker-livid.vercel.app` (the deployed production URL).
 3. Under **Redirect URLs**, click **Add URL** and add your production origin,
    `http://localhost:3000`, and `http://localhost:3001` for local testing.
    The app sends `window.location.origin` as the signup/recovery redirect.
@@ -213,17 +216,18 @@ Official setup references: [Vercel project import](https://vercel.com/docs/proje
 ## Acceptance checklist
 
 - [ ] Real email/password signup and login; two-account isolation verified
-- [ ] Camera/gallery photo compressed to ≤1,280px and <200 KB before upload
-- [ ] Meal photo, notes, type, date/time
-- [ ] Overnight sleep logging with automatic duration
-- [ ] Weekly sleep and meals-by-type charts
-- [ ] Calendar/day history, photos, edit and delete
+- [x] Gallery photo compressed to ≤1,280px and <200 KB before upload; camera input provided (physical-phone check pending)
+- [x] Meal photo, notes, type, date/time
+- [x] Overnight sleep logging with automatic duration
+- [x] Weekly sleep and meals-by-type charts
+- [x] Calendar/day history, photos, edit and delete
 - [ ] Valid PWA, phone installation, small-screen usability
-- [ ] Bold, layered, readable maximalist design with restrained motion
+- [x] Bold, layered, readable maximalist design with restrained motion (user acceptance pending)
 - [x] Copy-paste SQL schema, RLS policies, Storage bucket policies provided
-- [ ] Live Vercel deployment with environment variables; complete setup guide
-- [ ] Final secrets scan; public Supabase key only in client bundle
-- [ ] Full outer-loop audit against two accounts and mobile layout
+- [x] Live Vercel deployment with environment variables; complete setup guide
+- [x] Final secrets scan; public Supabase key only in client bundle
+- [x] Automated outer-loop audit against two accounts and mobile layout
+- [ ] Production signup email confirmation and password-reset delivery verified by mailbox owner
 - [ ] User confirms deployed app on their phone
 
 References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security)
